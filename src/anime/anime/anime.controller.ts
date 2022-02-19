@@ -1,8 +1,10 @@
 import { AnimeDto, CreateAnimeDto, IAnimeDto, UpdateAnimeDto } from './models/anime.model';
-import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { NotAcceptableException } from 'shared/httpExceptions';
 import { AnimeService } from './anime.service';
 import { Observable } from 'rxjs';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { Express } from 'express'
 
 @Controller('anime')
 export class AnimeController {
@@ -19,15 +21,19 @@ export class AnimeController {
   }
 
   @Post()
-  create(@Body() createAnimeDto: CreateAnimeDto): Observable<IAnimeDto> {
-    const requestedNewAnime = new AnimeDto({ _id: 'dummyId', ...createAnimeDto });
+  @UseInterceptors(FileInterceptor('poster'))
+  create(
+    @UploadedFile() poster: Express.Multer.File,
+    @Body() createAnimeDto: CreateAnimeDto,
+  ): Observable<IAnimeDto> {
+    const requestedNewAnime = new AnimeDto({ _id: 'dummyId', ...createAnimeDto, poster: poster?.originalname });
     const { missingProperties } = requestedNewAnime;
 
     if (missingProperties.length) {
       throw new NotAcceptableException(JSON.stringify({ missingProperties }));
     }
 
-    return this.service.create(createAnimeDto);
+    return this.service.create(({...createAnimeDto, poster: poster?.originalname}));
   }
 
   @Put(':id')

@@ -8,16 +8,22 @@ export class Anime {
   @Prop({ required: true })
   name: string;
 
-  @Prop({required: true})
+  @Prop({ required: true })
   translationKey: string;
 
-  @Prop({required: true})
+  @Prop({ required: true })
   poster: string;
 
-  @Prop({required: true})
+  @Prop({ required: true })
   description: string;
 
-  @Prop({default: false})
+  @Prop({ immutable: true, default: Date.now() })
+  createdTime: Date;
+
+  @Prop({ default: Date.now() })
+  updatedTime: Date;
+
+  @Prop({ default: false })
   isDeleted: boolean;
 }
 

@@ -32,7 +32,10 @@ export class AnimeService {
   }
 
   update(_id: string, updateAnimeDto: UpdateAnimeDto): Observable<IAnimeDto> {
-    const query = this.model.findOneAndUpdate({ _id }, { $set: updateAnimeDto });
+    const query = this.model.findOneAndUpdate(
+      { _id },
+      { $set: { ...updateAnimeDto, updatedTime: Date.now() } },
+    );
 
     return from(query.exec()).pipe(map((anime) => new AnimeDto(anime).object));
   }
