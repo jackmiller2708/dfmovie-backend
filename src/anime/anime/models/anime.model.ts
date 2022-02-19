@@ -38,6 +38,16 @@ export class AnimeDto implements IAnimeDto {
     };
   }
 
+  static get emptyObject(): IAnimeDto {
+    return {
+      _id: "",
+      name: "Not Found",
+      translationKey: "",
+      description: "",
+      poster: "",
+    }
+  }
+
   constructor(anime: IAnimeDto) {
     const { _id, name, translationKey, poster, description } = anime;
     this.missingProperties = [];

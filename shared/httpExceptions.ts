@@ -14,3 +14,12 @@ export class NotAcceptableException extends HttpException {
     );
   }
 }
+
+export class NotFoundException extends HttpException {
+  constructor(error: string) {
+    super(
+      { statusCode: HttpStatus.NOT_FOUND, error },
+      HttpStatus.NOT_FOUND,
+    );
+  }
+}

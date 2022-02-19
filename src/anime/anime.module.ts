@@ -4,6 +4,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { MulterModule } from '@nestjs/platform-express';
 import { AnimeService } from './anime/anime.service';
 import { diskStorage } from 'multer';
+import { AppService } from 'src/app.service';
 import { Module } from '@nestjs/common';
 
 @Module({
@@ -20,6 +21,6 @@ import { Module } from '@nestjs/common';
     MongooseModule.forFeature([{ name: Anime.name, schema: AnimeSchema }]),
   ],
   controllers: [AnimeController],
-  providers: [AnimeService],
+  providers: [AnimeService, AppService],
 })
 export class AnimeModule {}
