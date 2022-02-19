@@ -31,10 +31,10 @@ export class AnimeService {
     return from(createdAnime.save()).pipe(map((anime) => new AnimeDto(anime).object));
   }
 
-  update(_id: string, updateAnimeDto: UpdateAnimeDto): Observable<any> {
-    const query = this.model.updateOne({ _id }, { $set: updateAnimeDto });
+  update(_id: string, updateAnimeDto: UpdateAnimeDto): Observable<IAnimeDto> {
+    const query = this.model.findOneAndUpdate({ _id }, { $set: updateAnimeDto });
 
-    return from(query.exec());
+    return from(query.exec()).pipe(map((anime) => new AnimeDto(anime).object));
   }
 
   delete(_id: string): Observable<any> {

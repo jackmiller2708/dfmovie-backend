@@ -34,7 +34,7 @@ export class AnimeController {
   update(
     @Param('id') id: string,
     @Body() updateAnimeDto: UpdateAnimeDto,
-  ): Observable<any> {
+  ): Observable<IAnimeDto> {
     if (!Object.values(updateAnimeDto).length) {
       throw new NotAcceptableException(
         'Must have at least one property to update',
