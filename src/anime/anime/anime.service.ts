@@ -1,10 +1,10 @@
 import { AnimeDto, CreateAnimeDto, IAnimeDto, UpdateAnimeDto } from './models/anime.model';
-import { defaultIfEmpty, from, map, Observable } from 'rxjs';
+import { defaultIfEmpty, filter, from, map, Observable, tap } from 'rxjs';
 import { Anime, AnimeDocument } from './models/anime.schema';
 import { InjectModel } from '@nestjs/mongoose';
+import { AppService } from 'src/app.service';
 import { Injectable } from '@nestjs/common';
 import { Model } from 'mongoose';
-import { AppService } from 'src/app.service';
 
 @Injectable()
 export class AnimeService {
@@ -57,12 +57,21 @@ export class AnimeService {
    * @returns
    */
   update(_id: string, updateAnimeDto: UpdateAnimeDto): Observable<IAnimeDto> {
+    const { poster } = updateAnimeDto;
     const query = this.model.findOneAndUpdate(
       { _id },
       { $set: { ...updateAnimeDto, updatedTime: Date.now() } },
     );
 
-    return from(query.exec()).pipe(map((anime) => new AnimeDto(anime).object));
+    return from(query.exec()).pipe(
+      defaultIfEmpty(AnimeDto.emptyObject),
+      tap(anime => {
+        if(anime.poster !== poster && anime.poster) {
+          this.appService.removeUploadImage(anime.poster as string);
+        }
+      }),
+      map((anime) => new AnimeDto(anime).object),
+    );
   }
 
   /**

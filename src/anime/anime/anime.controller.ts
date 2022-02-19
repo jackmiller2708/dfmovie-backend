@@ -50,7 +50,7 @@ export class AnimeController {
       throw new NotAcceptableException('Must have at least one property to update');
     }
 
-    return this.service.update(id, {...updateAnimeDto, poster: poster?.originalname});
+    return this.service.update(id, {...updateAnimeDto, poster: poster?.filename});
   }
 
   @Delete(':id')
