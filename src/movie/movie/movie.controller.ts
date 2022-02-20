@@ -25,32 +25,32 @@ export class MovieController {
   }
 
   @Get('/poster/:filename')
-  findAnimePoster(@Param('filename') filename: string, @Res() res: Response): Response {
+  findMoviePoster(@Param('filename') filename: string, @Res() res: Response): Response {
     const file = this.appService.getUploadedImage(filename);
     return file.pipe(res);
   }
 
   @Post()
   @UseInterceptors(FileInterceptor('poster'))
-  create(@UploadedFile() poster: Express.Multer.File, @Body() createAnimeDto: CreateMovieDto): Observable<IMovieDto> {
-    const requestedNewAnime = new MovieDto({ _id: 'dummyId', ...createAnimeDto, poster: poster?.filename });
-    const { missingProperties } = requestedNewAnime;
+  create(@UploadedFile() poster: Express.Multer.File, @Body() createMovieDto: CreateMovieDto): Observable<IMovieDto> {
+    const newRequestedMovie = new MovieDto({ _id: 'dummyId', ...createMovieDto, poster: poster?.filename });
+    const { missingProperties } = newRequestedMovie;
 
     if (missingProperties.length) {
       throw new NotAcceptableException(JSON.stringify({ missingProperties }));
     }
 
-    return this.service.create({ ...createAnimeDto, poster: poster?.filename });
+    return this.service.create({ ...createMovieDto, poster: poster?.filename });
   }
 
   @Put(':id')
   @UseInterceptors(FileInterceptor('poster'))
-  update(@Param('id') id: string, @UploadedFile() poster: Express.Multer.File, @Body() updateAnimeDto: UpdateMovieDto): Observable<IMovieDto> {
-    if (!Object.values(updateAnimeDto).length && !poster) {
+  update(@Param('id') id: string, @UploadedFile() poster: Express.Multer.File, @Body() updateMovieDto: UpdateMovieDto): Observable<IMovieDto> {
+    if (!Object.values(updateMovieDto).length && !poster) {
       throw new NotAcceptableException('Must have at least one property to update');
     }
 
-    return this.service.update(id, {...updateAnimeDto, poster: poster?.filename});
+    return this.service.update(id, {...updateMovieDto, poster: poster?.filename});
   }
 
   @Delete(':id')

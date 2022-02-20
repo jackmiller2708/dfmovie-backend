@@ -48,8 +48,8 @@ export class MovieDto implements IMovieDto {
     }
   }
 
-  constructor(anime: IMovieDto) {
-    const { _id, name, translationKey, poster, description } = anime;
+  constructor(movie: IMovieDto) {
+    const { _id, name, translationKey, poster, description } = movie;
     this.missingProperties = [];
 
     this._id = _id;

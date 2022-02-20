@@ -21,7 +21,7 @@ export class MovieService {
     const query = this.model.find();
 
     return from(query.exec()).pipe(
-      map((animeList) => animeList.map((anime) => new MovieDto(anime).object)),
+      map((movieList) => movieList.map((movie) => new MovieDto(movie).object)),
     );
   }
 
@@ -35,42 +35,42 @@ export class MovieService {
 
     return from(query.exec()).pipe(
       defaultIfEmpty(MovieDto.emptyObject),
-      map((anime) => new MovieDto(anime).object),
+      map((movie) => new MovieDto(movie).object),
     );
   }
 
   /**
    *
-   * @param createAnimeDto
+   * @param createMovieDto
    * @returns
    */
-  create(createAnimeDto: CreateMovieDto): Observable<IMovieDto> {
-    const createdAnime = new this.model(createAnimeDto);
+  create(createMovieDto: CreateMovieDto): Observable<IMovieDto> {
+    const createdMovie = new this.model(createMovieDto);
 
-    return from(createdAnime.save()).pipe(map((anime) => new MovieDto(anime).object));
+    return from(createdMovie.save()).pipe(map((movie) => new MovieDto(movie).object));
   }
 
   /**
    *
    * @param _id
-   * @param updateAnimeDto
+   * @param updateMovieDto
    * @returns
    */
-  update(_id: string, updateAnimeDto: UpdateMovieDto): Observable<IMovieDto> {
-    const { poster } = updateAnimeDto;
+  update(_id: string, updateMovieDto: UpdateMovieDto): Observable<IMovieDto> {
+    const { poster } = updateMovieDto;
     const query = this.model.findOneAndUpdate(
       { _id },
-      { $set: { ...updateAnimeDto, updatedTime: Date.now() } },
+      { $set: { ...updateMovieDto, updatedTime: Date.now() } },
     );
 
     return from(query.exec()).pipe(
       defaultIfEmpty(MovieDto.emptyObject),
-      tap(anime => {
-        if(anime.poster !== poster && anime.poster) {
-          this.appService.removeUploadImage(anime.poster as string);
+      tap(movie => {
+        if(movie.poster !== poster && movie.poster) {
+          this.appService.removeUploadImage(movie.poster as string);
         }
       }),
-      map((anime) => new MovieDto(anime).object),
+      map((movie) => new MovieDto(movie).object),
     );
   }
 
@@ -82,6 +82,6 @@ export class MovieService {
   delete(_id: string): Observable<boolean> {
     const query = this.model.findOneAndUpdate({ _id }, { $set: { isDeleted: true } });
 
-    return from(query.exec()).pipe(map((anime) => anime.isDeleted));
+    return from(query.exec()).pipe(map((movie) => movie.isDeleted));
   }
 }

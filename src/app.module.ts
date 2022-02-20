@@ -10,7 +10,7 @@ import { Module } from '@nestjs/common';
 @Module({
   imports: [
     MongooseModule.forRoot(
-      'mongodb+srv://admin:OimXWaPJHMHmj5m3@cluster0.taaut.mongodb.net/AnimeReview',
+      'mongodb+srv://admin:OimXWaPJHMHmj5m3@cluster0.taaut.mongodb.net/MovieReview',
     ),
     MovieModule,
   ],
