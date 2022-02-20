@@ -1,11 +1,11 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
 import { BaseSchema } from 'shared/base.schema';
+import { Document } from 'mongoose';
 
-export type MovieDocument = Movie & Document;
+export type CategoryDocument = Category & Document;
 
 @Schema()
-export class Movie extends BaseSchema {
+export class Category extends BaseSchema {
   @Prop({ required: true })
   name: string;
 
@@ -13,10 +13,8 @@ export class Movie extends BaseSchema {
   translationKey: string;
 
   @Prop({ required: true })
-  poster: string;
-
-  @Prop({ required: true })
   description: string;
+
 }
 
-export const MovieSchema = SchemaFactory.createForClass(Movie);
+export const MovieSchema = SchemaFactory.createForClass(Category);

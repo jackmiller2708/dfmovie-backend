@@ -6,6 +6,8 @@ import { MovieService } from './movie/movie.service';
 import { diskStorage } from 'multer';
 import { AppService } from 'src/app.service';
 import { Module } from '@nestjs/common';
+import { CategoryController } from './category/category.controller';
+import { CategoryService } from './category/category.service';
 
 @Module({
   imports: [
@@ -20,7 +22,7 @@ import { Module } from '@nestjs/common';
     }),
     MongooseModule.forFeature([{ name: Movie.name, schema: MovieSchema }]),
   ],
-  controllers: [MovieController],
-  providers: [MovieService, AppService],
+  controllers: [MovieController, CategoryController],
+  providers: [MovieService, AppService, CategoryService],
 })
 export class MovieModule {}
