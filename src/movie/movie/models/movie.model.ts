@@ -1,18 +1,18 @@
-export type CreateAnimeDto = {
+export type CreateMovieDto = {
   name: string;
   translationKey: string;
   poster: string;
   description: string;
 };
 
-export type UpdateAnimeDto = {
+export type UpdateMovieDto = {
   name?: string;
   translationey?: string;
   poster?: string;
   description?: string;
 };
 
-export interface IAnimeDto {
+export interface IMovieDto {
   _id: string;
   name: string | void;
   translationKey: string | void;
@@ -20,7 +20,7 @@ export interface IAnimeDto {
   description: string | void;
 }
 
-export class AnimeDto implements IAnimeDto {
+export class MovieDto implements IMovieDto {
   readonly _id: string;
   readonly name: string | void;
   readonly translationKey: string | void;
@@ -28,7 +28,7 @@ export class AnimeDto implements IAnimeDto {
   readonly description: string | void;
   readonly missingProperties: string[];
 
-  get object(): IAnimeDto {
+  get object(): IMovieDto {
     return {
       _id: this._id,
       name: this.name,
@@ -38,7 +38,7 @@ export class AnimeDto implements IAnimeDto {
     };
   }
 
-  static get emptyObject(): IAnimeDto {
+  static get emptyObject(): IMovieDto {
     return {
       _id: "",
       name: "Not Found",
@@ -48,14 +48,13 @@ export class AnimeDto implements IAnimeDto {
     }
   }
 
-  constructor(anime: IAnimeDto) {
+  constructor(anime: IMovieDto) {
     const { _id, name, translationKey, poster, description } = anime;
     this.missingProperties = [];
 
     this._id = _id;
     this.name = name ?? this.addMissingProperties('name');
-    this.translationKey =
-      translationKey ?? this.addMissingProperties('translationKey');
+    this.translationKey = translationKey ?? this.addMissingProperties('translationKey');
     this.poster = poster ?? this.addMissingProperties('poster');
     this.description = description ?? this.addMissingProperties('description');
   }

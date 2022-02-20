@@ -1,8 +1,8 @@
-import { Anime, AnimeSchema } from './anime/models/anime.schema';
-import { AnimeController } from './anime/anime.controller';
+import { Movie, MovieSchema } from './movie/models/movie.schema';
+import { MovieController } from './movie/movie.controller';
 import { MongooseModule } from '@nestjs/mongoose';
 import { MulterModule } from '@nestjs/platform-express';
-import { AnimeService } from './anime/anime.service';
+import { MovieService } from './movie/movie.service';
 import { diskStorage } from 'multer';
 import { AppService } from 'src/app.service';
 import { Module } from '@nestjs/common';
@@ -18,9 +18,9 @@ import { Module } from '@nestjs/common';
         },
       }),
     }),
-    MongooseModule.forFeature([{ name: Anime.name, schema: AnimeSchema }]),
+    MongooseModule.forFeature([{ name: Movie.name, schema: MovieSchema }]),
   ],
-  controllers: [AnimeController],
-  providers: [AnimeService, AppService],
+  controllers: [MovieController],
+  providers: [MovieService, AppService],
 })
-export class AnimeModule {}
+export class MovieModule {}

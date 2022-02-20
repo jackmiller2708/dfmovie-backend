@@ -1,39 +1,39 @@
 import { Body, Controller, Delete, Get, Param, Post, Put, Res, UploadedFile, UseInterceptors } from '@nestjs/common';
-import { AnimeDto, CreateAnimeDto, IAnimeDto, UpdateAnimeDto } from './models/anime.model';
+import { MovieDto, CreateMovieDto, IMovieDto, UpdateMovieDto } from './models/movie.model';
 import { NotAcceptableException } from 'shared/httpExceptions';
 import { Express, Response } from 'express'
 import { FileInterceptor } from '@nestjs/platform-express';
-import { AnimeService } from './anime.service';
+import { MovieService } from './movie.service';
 import { AppService } from 'src/app.service';
 import { Observable } from 'rxjs';
 
-@Controller('anime')
-export class AnimeController {
+@Controller('movie')
+export class MovieController {
   constructor(
-    private readonly service: AnimeService,
+    private readonly service: MovieService,
     private readonly appService: AppService
   ) {}
 
   @Get()
-  findAll(): Observable<IAnimeDto[]> {
+  findAll(): Observable<IMovieDto[]> {
     return this.service.findAll();
   }
 
   @Get(':id')
-  findById(@Param('id') id: string): Observable<IAnimeDto> {
+  findById(@Param('id') id: string): Observable<IMovieDto> {
     return this.service.findById(id);
   }
 
   @Get('/poster/:filename')
-  findAnimePoster(@Param('filename') filename: string, @Res() res: Response): any {
+  findAnimePoster(@Param('filename') filename: string, @Res() res: Response): Response {
     const file = this.appService.getUploadedImage(filename);
     return file.pipe(res);
   }
 
   @Post()
   @UseInterceptors(FileInterceptor('poster'))
-  create(@UploadedFile() poster: Express.Multer.File, @Body() createAnimeDto: CreateAnimeDto): Observable<IAnimeDto> {
-    const requestedNewAnime = new AnimeDto({ _id: 'dummyId', ...createAnimeDto, poster: poster?.filename });
+  create(@UploadedFile() poster: Express.Multer.File, @Body() createAnimeDto: CreateMovieDto): Observable<IMovieDto> {
+    const requestedNewAnime = new MovieDto({ _id: 'dummyId', ...createAnimeDto, poster: poster?.filename });
     const { missingProperties } = requestedNewAnime;
 
     if (missingProperties.length) {
@@ -45,7 +45,7 @@ export class AnimeController {
 
   @Put(':id')
   @UseInterceptors(FileInterceptor('poster'))
-  update(@Param('id') id: string, @UploadedFile() poster: Express.Multer.File, @Body() updateAnimeDto: UpdateAnimeDto): Observable<IAnimeDto> {
+  update(@Param('id') id: string, @UploadedFile() poster: Express.Multer.File, @Body() updateAnimeDto: UpdateMovieDto): Observable<IMovieDto> {
     if (!Object.values(updateAnimeDto).length && !poster) {
       throw new NotAcceptableException('Must have at least one property to update');
     }

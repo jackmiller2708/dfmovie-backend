@@ -1,10 +1,10 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 
-export type AnimeDocument = Anime & Document;
+export type MovieDocument = Movie & Document;
 
 @Schema()
-export class Anime {
+export class Movie {
   @Prop({ required: true })
   name: string;
 
@@ -27,4 +27,4 @@ export class Anime {
   isDeleted: boolean;
 }
 
-export const AnimeSchema = SchemaFactory.createForClass(Anime);
+export const MovieSchema = SchemaFactory.createForClass(Movie);
