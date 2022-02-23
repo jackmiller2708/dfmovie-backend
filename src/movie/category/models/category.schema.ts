@@ -6,15 +6,11 @@ export type CategoryDocument = Category & Document;
 
 @Schema()
 export class Category extends BaseSchema {
-  @Prop({ required: true })
+  @Prop({ required: true, unique: true })
   name: string;
 
-  @Prop({ required: true })
+  @Prop({ required: true, unique: true })
   translationKey: string;
-
-  @Prop({ required: true })
-  description: string;
-
 }
 
-export const MovieSchema = SchemaFactory.createForClass(Category);
+export const CategorySchema = SchemaFactory.createForClass(Category);
