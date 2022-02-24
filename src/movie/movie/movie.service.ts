@@ -52,7 +52,7 @@ export class MovieService {
     const query = this.model.findByIdAndUpdate(id, { $set: updateData }, { returnOriginal: false });
 
     if (categories) {
-      this.addCategories(id, categories);
+      this.updateCategory(id, categories);
     }
 
     return from(query.exec()).pipe(
