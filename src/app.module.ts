@@ -3,9 +3,9 @@ import { TransformInterceptor } from 'shared/transform.interceptor';
 import { HttpExceptionFilter } from 'shared/execption.filter';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AppController } from './app.controller';
-import { MovieModule } from './movie/movie.module';
 import { AppService } from './app.service';
 import { Module } from '@nestjs/common';
+import { MovieModule } from './movie/movie.module';
 
 @Module({
   imports: [

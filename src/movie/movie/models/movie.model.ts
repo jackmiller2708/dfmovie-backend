@@ -1,15 +1,15 @@
 export type CreateMovieDto = {
-  name: string;
-  translationKey: string;
+  title: string;
   poster: string;
   description: string;
+  translationKey: string;
   categories?: string[];
-};
+}
 
 export type UpdateMovieDto = {
-  name?: string;
-  translationey?: string;
+  title?: string;
   poster?: string;
   description?: string;
+  translationKey?: string;
   categories?: string[];
-};
+}
