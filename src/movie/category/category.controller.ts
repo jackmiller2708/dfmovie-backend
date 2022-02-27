@@ -5,8 +5,10 @@ import { CategoryService } from './category.service';
 import { Observable } from 'rxjs';
 import { Category } from './models/category.schema';
 import { Public } from 'shared/decorators/PublicRoute.decorator';
+import { Authorize } from 'shared/decorators/Authorize.decorator';
+import { Permissions } from 'src/auth/auth.permission';
 
-@Controller('category')
+@Controller('categories')
 export class CategoryController {
   constructor(private readonly service: CategoryService) {}
 
@@ -23,16 +25,19 @@ export class CategoryController {
   }
 
   @Post()
+  @Authorize(Permissions.Pages_Categories_Create)
   create(@Body() createCategoryDto: CreateCategoryDto): Observable<Category> {
     return this.service.create(createCategoryDto);
   }
 
   @Put(':id')
+  @Authorize(Permissions.Pages_Categories_Update)
   update(@Param('id') id: string, @Body() updateCategoryDto: UpdateCategoryDto): Observable<Category> {
     return this.service.update(id, updateCategoryDto);
   }
 
   @Delete(':id')
+  @Authorize(Permissions.Pages_Categories_Delete)
   delete(@Param('id') id: string): Observable<boolean> {
     return this.service.delete(id);
   }

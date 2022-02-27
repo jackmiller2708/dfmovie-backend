@@ -8,8 +8,10 @@ import { AppService } from 'src/app.service';
 import { Observable } from 'rxjs';
 import { Movie } from './models/movie.schema';
 import { Public } from 'shared/decorators/PublicRoute.decorator';
+import { Authorize } from 'shared/decorators/Authorize.decorator';
+import { Permissions } from 'src/auth/auth.permission';
 
-@Controller('movie')
+@Controller('movies')
 export class MovieController {
   constructor(
     private readonly service: MovieService,
@@ -36,12 +38,14 @@ export class MovieController {
   }
 
   @Post()
+  @Authorize(Permissions.Pages_Movies_Create)
   @UseInterceptors(FileInterceptor('poster'))
   create(@UploadedFile() poster: Express.Multer.File, @Body() createMovieDto: CreateMovieDto): Observable<Movie> {
     return this.service.create({ ...createMovieDto, poster: poster?.filename });
   }
 
   @Put(':id')
+  @Authorize(Permissions.Pages_Movies_Update)
   @UseInterceptors(FileInterceptor('poster'))
   update(@Param('id') id: string, @UploadedFile() poster: Express.Multer.File, @Body() updateMovieDto: UpdateMovieDto): Observable<Movie> {
     if (!Object.values(updateMovieDto).length && !poster) {
@@ -52,6 +56,7 @@ export class MovieController {
   }
 
   @Delete(':id')
+  @Authorize(Permissions.Pages_Movies_Delete)
   delete(@Param('id') id: string): Observable<boolean> {
     return this.service.delete(id);
   }
