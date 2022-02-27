@@ -20,7 +20,7 @@ import { Module } from '@nestjs/common';
     ]),
     MulterModule.register({
       storage: diskStorage({
-        destination: './uploads',
+        destination: 'uploads/poster',
         filename: function (req, file, cb) {
           const uniqueSuffix =
             Date.now() + '-' + Math.round(Math.random() * 1e9);

@@ -26,7 +26,7 @@ export class MovieService {
   findById(_id: string): Observable<Movie> {
     const query = this.model.aggregate([
       { $match: { $expr: { $eq: ['$_id', { $toObjectId: _id }] } } },
-      { $project: { _id: 0 }},
+      { $project: { _id: 0 } },
       ...selectQuery,
     ]);
 

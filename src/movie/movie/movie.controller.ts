@@ -7,25 +7,29 @@ import { MovieService } from './movie.service';
 import { AppService } from 'src/app.service';
 import { Observable } from 'rxjs';
 import { Movie } from './models/movie.schema';
+import { Public } from 'shared/decorators/PublicRoute.decorator';
 
 @Controller('movie')
 export class MovieController {
   constructor(
     private readonly service: MovieService,
-    private readonly appService: AppService
+    private readonly appService: AppService,
   ) {}
 
   @Get()
+  @Public()
   findAll(): Observable<Movie[]> {
     return this.service.findAll();
   }
 
   @Get(':id')
+  @Public()
   findById(@Param('id') id: string): Observable<Movie> {
     return this.service.findById(id);
   }
 
   @Get('/poster/:filename')
+  @Public()
   findMoviePoster(@Param('filename') filename: string, @Res() res: Response): Response {
     const file = this.appService.getUploadedImage(filename);
     return file.pipe(res);
@@ -34,7 +38,7 @@ export class MovieController {
   @Post()
   @UseInterceptors(FileInterceptor('poster'))
   create(@UploadedFile() poster: Express.Multer.File, @Body() createMovieDto: CreateMovieDto): Observable<Movie> {
-        return this.service.create({ ...createMovieDto, poster: poster?.filename });
+    return this.service.create({ ...createMovieDto, poster: poster?.filename });
   }
 
   @Put(':id')

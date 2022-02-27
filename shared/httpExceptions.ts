@@ -23,3 +23,12 @@ export class NotFoundException extends HttpException {
     );
   }
 }
+
+export class UnauthorizedException extends HttpException {
+  constructor(error: string) {
+    super(
+      { statusCode: HttpStatus.UNAUTHORIZED, error },
+      HttpStatus.UNAUTHORIZED,
+    );
+  }
+}

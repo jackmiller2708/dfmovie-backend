@@ -4,17 +4,20 @@ import { NotAcceptableException } from 'shared/httpExceptions';
 import { CategoryService } from './category.service';
 import { Observable } from 'rxjs';
 import { Category } from './models/category.schema';
+import { Public } from 'shared/decorators/PublicRoute.decorator';
 
 @Controller('category')
 export class CategoryController {
   constructor(private readonly service: CategoryService) {}
 
   @Get()
+  @Public()
   findAll(): Observable<Category[]> {
     return this.service.findAll();
   }
 
   @Get(':id')
+  @Public()
   findById(@Param('id') id: string): Observable<Category> {
     return this.service.findById(id);
   }
