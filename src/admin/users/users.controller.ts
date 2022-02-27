@@ -14,6 +14,11 @@ export class UsersController {
     return this.service.findAll();
   }
 
+  @Get(':id')
+  findById(@Param('id') id: string) {
+    this.service.findById(id);
+  }
+
   @Post()
   @UseInterceptors(FileInterceptor('pfp'))
   create(@UploadedFile() pfp: Express.Multer.File, @Body() createUserDto: CreateUserDto): Observable<User> {

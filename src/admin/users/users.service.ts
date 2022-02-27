@@ -32,7 +32,11 @@ export class UsersService {
     return from(query.exec()).pipe(map(user => user[0] ?? null));
   }
 
-  findById(_id: string): void {}
+  findById(_id: string): Observable<User> {
+    const query = this.model.findById(_id);
+
+    return from(query.exec());
+  }
 
   create(createUserDto: CreateUserDto): Observable<User> {
     const  { password, username } = createUserDto;
