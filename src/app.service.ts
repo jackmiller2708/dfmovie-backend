@@ -11,7 +11,7 @@ export class AppService {
   }
 
   getUploadedImage(filename: string): ReadStream {
-    const filePath = join(process.cwd(), 'uploads', filename);
+    const filePath = join(process.cwd(), 'uploads', 'poster', filename);
 
     if (!existsSync(filePath)) {
       throw new NotFoundException('Image Not Found!');
@@ -21,7 +21,7 @@ export class AppService {
   }
 
   removeUploadImage(filename: string): void {
-    const filePath = join(process.cwd(), 'uploads', filename);
+    const filePath = join(process.cwd(), 'uploads', 'poster', filename);
 
     unlink(filePath, (err) => {
       if (err) return console.log(err);
