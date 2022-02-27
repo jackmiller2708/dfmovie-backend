@@ -21,6 +21,12 @@ export class UsersService {
   }
 
   findOne(user: UserDto): Observable<User> {
+    const {username} = user;
+
+    if (username) {
+      user.username = username.toLowerCase();
+    }
+
     const query = this.model.aggregate([{ $match: user }])
 
     return from(query.exec()).pipe(map(user => user[0] ?? null));
@@ -29,20 +35,28 @@ export class UsersService {
   findById(_id: string): void {}
 
   create(createUserDto: CreateUserDto): Observable<User> {
-    const  { password } = createUserDto;
+    const  { password, username } = createUserDto;
     const saltOrRounds = Number(this.config.get<number>('SALT_OR_ROUNDS'));
-    const createdUser = new this.model({ ...createUserDto, password: hashSync(password, saltOrRounds)});
+    const createdUser = new this.model({
+      ...createUserDto,
+      username: username.toLowerCase(),
+      password: hashSync(password, saltOrRounds),
+    });
 
     return from(createdUser.save());
   }
 
   update(id: string, updateUserDto: UpdateUserDto): Observable<User> {
-    const  { password } = updateUserDto;
+    const  { password, username } = updateUserDto;
 
     if (password) {
       const saltOrRounds = Number(this.config.get<number>('SALT_OR_ROUNDS'));
 
       updateUserDto.password = hashSync(password, saltOrRounds);
+    }
+
+    if (username) {
+      updateUserDto.username = username.toLowerCase();
     }
 
     const query = this.model.findByIdAndUpdate(id, { $set: updateUserDto }, { returnOriginal: false });

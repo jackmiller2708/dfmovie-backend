@@ -11,9 +11,14 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       jwtFromRequest: ExtractJwt.fromExtractors([
         (req: Request): string => {
           const { authorization } = req.headers;
-          const [scheme, token] = authorization.split(' ');
 
-          return scheme === 'Bearer' && token ? token : '';
+          if (authorization) {
+            const [scheme, token] = authorization.split(' ');
+
+            return scheme === 'Bearer' && token ? token : '';
+          }
+
+          return '';
         },
       ]),
       ignoreExpiration: false,
