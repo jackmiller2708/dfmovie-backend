@@ -3,6 +3,7 @@ export type CreateUserDto = {
   lastName: string;
   email: string;
   pfp?: string;
+  roles: string[];
   username: string;
   password: string;
 }
@@ -12,6 +13,7 @@ export type UpdateUserDto = {
   lastName?: string;
   email?: string;
   pfp?: string;
+  roles?: string[];
   username?: string;
   password?: string;
 }
@@ -22,4 +24,5 @@ export type UserDto = {
   lastName?: string;
   email?: string;
   username?: string;
+  roles?: any[];
 }

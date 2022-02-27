@@ -24,8 +24,9 @@ export class AuthService {
     return null;
   }
 
-  async login({username, _id}: UserDto) {
-    const payload = { username, sub: String(_id) };
+  async login({username, _id, roles}: UserDto) {
+    const permissions = Array.from(new Set(roles.map(({ permissions }) => permissions).flat()));
+    const payload = { username, sub: String(_id), permissions };
 
     return { access_token: this.jwtService.sign(payload) };
   }

@@ -49,10 +49,10 @@ export class MovieService {
   update(id: string, updateMovieDto: UpdateMovieDto): Observable<Movie> {
     const { categories, ...updateData } = updateMovieDto;
     const { poster } = updateData;
-    const query = this.model.findByIdAndUpdate(id, { $set: updateData }, { returnOriginal: false });
+    const query = this.model.findByIdAndUpdate(id, { $set: updateData }, { new: true });
 
     if (categories) {
-      this.updateCategory(id, categories);
+      this.updateCategories(id, categories);
     }
 
     return from(query.exec()).pipe(
@@ -88,7 +88,7 @@ export class MovieService {
     );
   }
 
-  private updateCategory(id: string, categories: string[]): void {
+  private updateCategories(id: string, categories: string[]): void {
     this.movieCategoryModel.deleteMany({ movie: id }, () =>
       this.addCategories(id, categories),
     );
