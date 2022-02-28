@@ -33,7 +33,7 @@ export class MovieController {
   @Get('/poster/:filename')
   @Public()
   findMoviePoster(@Param('filename') filename: string, @Res() res: Response): Response {
-    const file = this.appService.getUploadedImage(filename);
+    const file = this.appService.getUploadedImage(filename, 'posters');
     return file.pipe(res);
   }
 

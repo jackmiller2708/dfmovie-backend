@@ -1,6 +1,6 @@
 import { CreateUserDto, UpdateUserDto, UserDto } from '../../admin/users/models/user.model';
 import { UserRole, UserRoleDocument } from 'shared/models/userrole.shema';
-import { from, map, Observable } from 'rxjs';
+import { from, map, Observable, tap } from 'rxjs';
 import { User, UserDocument } from './models/user.schema';
 import { ConfigService } from '@nestjs/config';
 import { InjectModel } from '@nestjs/mongoose';
@@ -8,17 +8,20 @@ import { selectQuery } from './users.query';
 import { Injectable } from '@nestjs/common';
 import { hashSync } from 'bcrypt';
 import { Model } from 'mongoose';
+import { AppService } from 'src/app.service';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectModel(User.name) private readonly model: Model<UserDocument>,
-    @InjectModel(UserRole.name) private readonly userRoleModel: Model<UserRoleDocument>,
+    @InjectModel(UserRole.name)
+    private readonly userRoleModel: Model<UserRoleDocument>,
     private readonly config: ConfigService,
+    private readonly appService: AppService,
   ) {}
 
   findAll(): Observable<User[]> {
-    const query = this.model.aggregate(selectQuery);;
+    const query = this.model.aggregate(selectQuery);
 
     return from(query.exec());
   }
@@ -30,23 +33,23 @@ export class UsersService {
       user.username = username.toLowerCase();
     }
 
-    const query = this.model.aggregate([{ $match: user }, ...selectQuery])
+    const query = this.model.aggregate([{ $match: user }, ...selectQuery]);
 
-    return from(query.exec()).pipe(map(user => user[0] ?? null));
+    return from(query.exec()).pipe(map((user) => user[0] ?? null));
   }
 
   findById(_id: string): Observable<User> {
     const query = this.model.aggregate([
       { $match: { $expr: { $eq: ['$_id', { $toObjectId: _id }] } } },
-      { $project: { _id: 0 }},
+      { $project: { _id: 0 } },
       ...selectQuery,
     ]);
 
-    return from(query.exec()).pipe(map(userList => userList[0] ?? null));
+    return from(query.exec()).pipe(map((userList) => userList[0] ?? null));
   }
 
   create(createUserDto: CreateUserDto): Observable<User> {
-    const  { password, username, roles } = createUserDto;
+    const { password, username, roles } = createUserDto;
     const saltOrRounds = Number(this.config.get<number>('SALT_OR_ROUNDS'));
     const createdUser = new this.model({
       ...createUserDto,
@@ -62,7 +65,7 @@ export class UsersService {
   }
 
   update(id: string, updateUserDto: UpdateUserDto): Observable<User> {
-    const  { password, username, roles } = updateUserDto;
+    const { password, username, roles, pfp } = updateUserDto;
 
     if (password) {
       const saltOrRounds = Number(this.config.get<number>('SALT_OR_ROUNDS'));
@@ -78,9 +81,19 @@ export class UsersService {
       this.updateRoles(id, roles);
     }
 
-    const query = this.model.findByIdAndUpdate(id, { $set: {...updateUserDto, updatedTime: new Date() } }, { new: true });
+    const query = this.model.findByIdAndUpdate(
+      id,
+      { $set: { ...updateUserDto, updatedTime: new Date() } },
+      { new: true },
+    );
 
-    return from(query.exec());
+    return from(query.exec()).pipe(
+      tap((user) => {
+        if (pfp && user.pfp !== pfp && user.pfp) {
+          this.appService.removeUploadImage(user.pfp, 'PFPs');
+        }
+      }),
+    );
   }
 
   delete(id: string): Observable<boolean> {
@@ -88,7 +101,14 @@ export class UsersService {
 
     this.userRoleModel.deleteMany({ user: id });
 
-    return from(query.exec()).pipe(map((user) => !user.isDeleted));
+    return from(query.exec()).pipe(
+      tap((user) => {
+        if (user.pfp) {
+          this.appService.removeUploadImage(user.pfp, 'PFPs');
+        }
+      }),
+      map((user) => !user.isDeleted),
+    );
   }
 
   // ==========================
@@ -101,8 +121,6 @@ export class UsersService {
   }
 
   private updateRoles(id: string, roles: string[]): void {
-    this.userRoleModel.deleteMany({ user: id }, () =>
-      this.addRoles(id, roles),
-    );
+    this.userRoleModel.deleteMany({ user: id }, () => this.addRoles(id, roles));
   }
 }

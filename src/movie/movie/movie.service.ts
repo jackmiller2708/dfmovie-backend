@@ -58,7 +58,7 @@ export class MovieService {
     return from(query.exec()).pipe(
       tap((movie) => {
         if (poster && movie.poster !== poster && movie.poster) {
-          this.appService.removeUploadImage(movie.poster);
+          this.appService.removeUploadImage(movie.poster, 'posters');
         }
       }),
     );
@@ -72,7 +72,7 @@ export class MovieService {
     return from(query.exec()).pipe(
       tap((movie) => {
         if (movie.poster) {
-          this.appService.removeUploadImage(movie.poster);
+          this.appService.removeUploadImage(movie.poster, 'posters');
         }
       }),
       map((movie) => !movie.isDeleted),

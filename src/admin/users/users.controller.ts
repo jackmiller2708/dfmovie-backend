@@ -1,15 +1,17 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, Res, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { CreateUserDto, UpdateUserDto } from '../../admin/users/models/user.model';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { UsersService } from './users.service';
 import { Permissions } from 'src/auth/auth.permission';
+import { AppService } from 'src/app.service';
 import { Observable } from 'rxjs';
 import { Authorize } from 'shared/decorators/Authorize.decorator';
+import { Response } from 'express'
 import { User } from './models/user.schema';
 
 @Controller('users')
 export class UsersController {
-  constructor(private readonly service: UsersService) {}
+  constructor(private readonly service: UsersService, private readonly appService: AppService) {}
 
   @Get()
   @Authorize(Permissions.Pages_Users_Read)
@@ -18,9 +20,15 @@ export class UsersController {
   }
 
   @Get(':id')
-  @Authorize(Permissions.Pages_Users_Read)
   findById(@Param('id') id: string) {
     this.service.findById(id);
+  }
+
+  @Get('profilePic/:filename')
+  getProfilePic(@Param('filename') filename: string, @Res() res: Response): Response {
+    const file = this.appService.getUploadedImage(filename, 'PFPs');
+
+    return file.pipe(res);
   }
 
   @Post()

@@ -30,8 +30,8 @@ export class AppService {
     return permissionTree;
   }
 
-  getUploadedImage(filename: string): ReadStream {
-    const filePath = join(process.cwd(), 'uploads', 'poster', filename);
+  getUploadedImage(filename: string, location: string): ReadStream {
+    const filePath = join(process.cwd(), location, 'poster', filename);
 
     if (!existsSync(filePath)) {
       throw new NotFoundException('Image Not Found!');
@@ -40,8 +40,8 @@ export class AppService {
     return createReadStream(filePath);
   }
 
-  removeUploadImage(filename: string): void {
-    const filePath = join(process.cwd(), 'uploads', 'poster', filename);
+  removeUploadImage(filename: string, location: string): void {
+    const filePath = join(process.cwd(), location, 'poster', filename);
 
     unlink(filePath, (err) => {
       if (err) return console.log(err);
