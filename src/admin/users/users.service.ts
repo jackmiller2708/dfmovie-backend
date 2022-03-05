@@ -2,13 +2,11 @@ import { CreateUserDto, UpdateUserDto, UserDto } from '../../admin/users/models/
 import { UserRole, UserRoleDocument } from 'shared/models/userrole.shema';
 import { from, map, Observable, tap } from 'rxjs';
 import { User, UserDocument } from './models/user.schema';
-import { ConfigService } from '@nestjs/config';
 import { InjectModel } from '@nestjs/mongoose';
 import { selectQuery } from './users.query';
 import { Injectable } from '@nestjs/common';
-import { hashSync } from 'bcrypt';
-import { Model } from 'mongoose';
 import { AppService } from 'src/app.service';
+import { Model } from 'mongoose';
 
 @Injectable()
 export class UsersService {
@@ -16,7 +14,6 @@ export class UsersService {
     @InjectModel(User.name) private readonly model: Model<UserDocument>,
     @InjectModel(UserRole.name)
     private readonly userRoleModel: Model<UserRoleDocument>,
-    private readonly config: ConfigService,
     private readonly appService: AppService,
   ) {}
 
@@ -49,13 +46,8 @@ export class UsersService {
   }
 
   create(createUserDto: CreateUserDto): Observable<User> {
-    const { password, username, roles } = createUserDto;
-    const saltOrRounds = Number(this.config.get<number>('SALT_OR_ROUNDS'));
-    const createdUser = new this.model({
-      ...createUserDto,
-      username: username.toLowerCase(),
-      password: hashSync(password, saltOrRounds),
-    });
+    const { roles } = createUserDto;
+    const createdUser = new this.model(createUserDto);
 
     if (roles) {
       this.addRoles(createdUser._id, roles);
@@ -65,17 +57,7 @@ export class UsersService {
   }
 
   update(id: string, updateUserDto: UpdateUserDto): Observable<User> {
-    const { password, username, roles, pfp } = updateUserDto;
-
-    if (password) {
-      const saltOrRounds = Number(this.config.get<number>('SALT_OR_ROUNDS'));
-
-      updateUserDto.password = hashSync(password, saltOrRounds);
-    }
-
-    if (username) {
-      updateUserDto.username = username.toLowerCase();
-    }
+    const { roles, pfp } = updateUserDto;
 
     if (roles) {
       this.updateRoles(id, roles);
