@@ -9,6 +9,7 @@ import { UsersService } from './users/users.service';
 import { RolesService } from './roles/roles.service';
 import { diskStorage } from 'multer';
 import { Module } from '@nestjs/common';
+import { AppService } from 'src/app.service';
 
 @Module({
   imports: [
@@ -29,7 +30,7 @@ import { Module } from '@nestjs/common';
     }),
   ],
   controllers: [UsersController, RolesController],
-  providers: [UsersService, RolesService],
+  providers: [UsersService, RolesService, AppService],
   exports: [UsersService]
 })
 export class AdminModule {}
