@@ -20,8 +20,8 @@ export class UsersController {
   }
 
   @Get(':id')
-  findById(@Param('id') id: string) {
-    this.service.findById(id);
+  findById(@Param('id') id: string): Observable<User> {
+    return this.service.findById(id);
   }
 
   @Get('profilePic/:filename')
