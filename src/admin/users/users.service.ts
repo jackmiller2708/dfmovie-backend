@@ -1,6 +1,6 @@
 import { CreateUserDto, UpdateUserDto, UserDto } from '../../admin/users/models/user.model';
 import { UserRole, UserRoleDocument } from 'shared/models/userrole.shema';
-import { from, map, Observable, tap } from 'rxjs';
+import { from, map, Observable, switchMap, tap } from 'rxjs';
 import { User, UserDocument } from './models/user.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import { selectQuery } from './users.query';
@@ -32,7 +32,7 @@ export class UsersService {
 
     const query = this.model.aggregate([{ $match: user }, ...selectQuery]);
 
-    return from(query.exec()).pipe(map((user) => user[0] ?? null));
+    return from(query.exec()).pipe(map((userList) => userList[0] ?? null));
   }
 
   findById(_id: string): Observable<User> {
@@ -53,7 +53,9 @@ export class UsersService {
       this.addRoles(createdUser._id, roles);
     }
 
-    return from(createdUser.save());
+    return from(createdUser.save()).pipe(
+      switchMap(() => this.findById(createdUser._id)),
+    );
   }
 
   update(id: string, updateUserDto: UpdateUserDto): Observable<User> {
@@ -75,6 +77,7 @@ export class UsersService {
           this.appService.removeUploadImage(user.pfp, 'PFPs');
         }
       }),
+      switchMap(() => this.findById(id))
     );
   }
 
