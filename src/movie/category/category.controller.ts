@@ -26,13 +26,13 @@ export class CategoryController {
 
   @Post()
   @Authorize(Permissions.Pages_Categories_Create)
-  create(@Body() createCategoryDto: CreateCategoryDto): Observable<Category> {
+  create(@Body() createCategoryDto: CreateCategoryDto):Promise<Observable<Category>> {
     return this.service.create(createCategoryDto);
   }
 
   @Put(':id')
   @Authorize(Permissions.Pages_Categories_Update)
-  update(@Param('id') id: string, @Body() updateCategoryDto: UpdateCategoryDto): Observable<Category> {
+  update(@Param('id') id: string, @Body() updateCategoryDto: UpdateCategoryDto): Promise<Observable<Category>> {
     return this.service.update(id, updateCategoryDto);
   }
 
