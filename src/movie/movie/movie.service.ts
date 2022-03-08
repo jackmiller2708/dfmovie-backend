@@ -1,6 +1,6 @@
 import { MovieCategory, MovieCategoryDocument } from 'shared/models/moviecateogy.schema';
 import { CreateMovieDto, UpdateMovieDto } from './models/movie.model';
-import { from, map, Observable, tap } from 'rxjs';
+import { from, map, Observable, switchMap, tap } from 'rxjs';
 import { Movie, MovieDocument } from './models/movie.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import { selectQuery } from './movie.query';
@@ -26,7 +26,6 @@ export class MovieService {
   findById(_id: string): Observable<Movie> {
     const query = this.model.aggregate([
       { $match: { $expr: { $eq: ['$_id', { $toObjectId: _id }] } } },
-      { $project: { _id: 0 } },
       ...selectQuery,
     ]);
 
@@ -35,24 +34,24 @@ export class MovieService {
     );
   }
 
-  create(createMovieDto: CreateMovieDto): Observable<Movie> {
+  async create(createMovieDto: CreateMovieDto): Promise<Observable<Movie>> {
     const { categories, ...createData } = createMovieDto;
     const createdMovie = new this.model(createData);
 
     if (categories) {
-      this.addCategories(createdMovie._id, categories);
+      await this.addCategories(createdMovie._id, categories);
     }
 
-    return from(createdMovie.save());
+    return from(createdMovie.save()).pipe(switchMap(() => this.findById(createdMovie._id)));
   }
 
-  update(id: string, updateMovieDto: UpdateMovieDto): Observable<Movie> {
+  async update(id: string, updateMovieDto: UpdateMovieDto): Promise<Observable<Movie>> {
     const { categories, ...updateData } = updateMovieDto;
     const { poster } = updateData;
     const query = this.model.findByIdAndUpdate(id, { $set: updateData }, { new: true });
 
     if (categories) {
-      this.updateCategories(id, categories);
+      await this.updateCategories(id, categories);
     }
 
     return from(query.exec()).pipe(
@@ -61,13 +60,14 @@ export class MovieService {
           this.appService.removeUploadImage(movie.poster, 'posters');
         }
       }),
+      switchMap(() => this.findById(id))
     );
   }
 
   delete(_id: string): Observable<boolean> {
-    const query = this.model.findByIdAndRemove(_id, {}, () => {
-      this.movieCategoryModel.deleteMany({ movie: _id });
-    });
+    const query = this.model.findByIdAndRemove(_id);
+
+    this.movieCategoryModel.deleteMany({ movie: _id });
 
     return from(query.exec()).pipe(
       tap((movie) => {
@@ -82,14 +82,14 @@ export class MovieService {
   // ==========================
   // UTILS METHODS
   // ==========================
-  private addCategories(id: string, categories: string[]): void {
-    this.movieCategoryModel.insertMany(
+  private async addCategories(id: string, categories: string[]): Promise<any> {
+    return await this.movieCategoryModel.insertMany(
       categories.map((category) => ({ movie: id, category: category })),
     );
   }
 
-  private updateCategories(id: string, categories: string[]): void {
-    this.movieCategoryModel.deleteMany({ movie: id }, () =>
+  private async updateCategories(id: string, categories: string[]): Promise<any> {
+    return await this.movieCategoryModel.deleteMany({ movie: id }, () =>
       this.addCategories(id, categories),
     );
   }

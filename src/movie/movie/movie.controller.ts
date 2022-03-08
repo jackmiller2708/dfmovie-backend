@@ -40,14 +40,14 @@ export class MovieController {
   @Post()
   @Authorize(Permissions.Pages_Movies_Create)
   @UseInterceptors(FileInterceptor('poster'))
-  create(@UploadedFile() poster: Express.Multer.File, @Body() createMovieDto: CreateMovieDto): Observable<Movie> {
+  create(@UploadedFile() poster: Express.Multer.File, @Body() createMovieDto: CreateMovieDto): Promise<Observable<Movie>> {
     return this.service.create({ ...createMovieDto, poster: poster?.filename });
   }
 
   @Put(':id')
   @Authorize(Permissions.Pages_Movies_Update)
   @UseInterceptors(FileInterceptor('poster'))
-  update(@Param('id') id: string, @UploadedFile() poster: Express.Multer.File, @Body() updateMovieDto: UpdateMovieDto): Observable<Movie> {
+  update(@Param('id') id: string, @UploadedFile() poster: Express.Multer.File, @Body() updateMovieDto: UpdateMovieDto): Promise<Observable<Movie>> {
     if (!Object.values(updateMovieDto).length && !poster) {
       throw new NotAcceptableException('Must have at least one property to update');
     }
