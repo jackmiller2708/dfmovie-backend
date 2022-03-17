@@ -1,6 +1,5 @@
 import { CreateCategoryDto, UpdateCategoryDto } from './models/category.model';
 import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
-import { NotAcceptableException } from 'shared/httpExceptions';
 import { CategoryService } from './category.service';
 import { Observable } from 'rxjs';
 import { Category } from './models/category.schema';

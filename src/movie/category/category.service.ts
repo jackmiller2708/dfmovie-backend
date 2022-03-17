@@ -45,10 +45,12 @@ export class CategoryService {
     );
   }
 
-  async update(_id: string, updateCategoryDto: UpdateCategoryDto): Promise<Observable<Category>> {
+  async update(_id: string,updateCategoryDto: UpdateCategoryDto): Promise<Observable<Category>> {
     const { movies, ...updateData } = updateCategoryDto;
     const query = this.model.findByIdAndUpdate(
-      _id, {...updateData, updatedTime: new Date()}, { returnOriginal: false }
+      _id,
+      { ...updateData, updatedTime: new Date() },
+      { returnOriginal: false },
     );
 
     if (movies) {
@@ -71,7 +73,7 @@ export class CategoryService {
   // ==========================
   private async addMovies(id: string, movies: string[]): Promise<void> {
     await this.movieCategoryModel.insertMany(
-      movies.map((movie) => ({ movie , category: id })),
+      movies.map((movie) => ({ movie, category: id })),
     );
   }
 

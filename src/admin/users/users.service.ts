@@ -38,7 +38,6 @@ export class UsersService {
   findById(_id: string): Observable<User> {
     const query = this.model.aggregate([
       { $match: { $expr: { $eq: ['$_id', { $toObjectId: _id }] } } },
-      { $project: { _id: 0 } },
       ...selectQuery,
     ]);
 
