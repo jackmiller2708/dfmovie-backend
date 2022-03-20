@@ -18,7 +18,10 @@ export class UsersService {
   ) {}
 
   findAll(): Observable<User[]> {
-    const query = this.model.aggregate(selectQuery);
+    const query = this.model.aggregate([
+      ...selectQuery,
+      { $project: { password: 0 } },
+    ]);
 
     return from(query.exec());
   }
@@ -39,6 +42,7 @@ export class UsersService {
     const query = this.model.aggregate([
       { $match: { $expr: { $eq: ['$_id', { $toObjectId: _id }] } } },
       ...selectQuery,
+      { $project: { password: 0} }
     ]);
 
     return from(query.exec()).pipe(map((userList) => userList[0] ?? null));
